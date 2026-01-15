@@ -1,0 +1,8 @@
+#!/home2/samba/hermant/public/p3-rec-linux/p3-rec
+[Desktop Entry]
+Name=FairPlay
+Comment=MINI FairPlay system
+Type=Application
+Exec=/home2/samba/hermant/public/p3-rec-linux/p3-rec
+StartupNotify=false
+Terminal=true
