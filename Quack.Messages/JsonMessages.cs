@@ -22,14 +22,12 @@ public abstract class JsonMessage<TSelf> : IJsonMessage where TSelf : JsonMessag
     
     public string Serialize()
     {
-        // TODO Stage 1: JsonMessage.Serialize
-        return "{}";
+        return JsonSerializer.Serialize<TSelf>((TSelf)this);
     }
 
     public static IJsonMessage? Deserialize(string json)
     {
-        // TODO Stage 1: JsonMessage.Deserialize
-        return null;
+        return JsonSerializer.Deserialize<TSelf>(json);
     }
 }
 

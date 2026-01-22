@@ -24,8 +24,7 @@ public class GameClient : IDisposable
         {
             var client = new TcpClient();
             
-            // TODO Stage 2: GameClient.ConnectAsync
-            await Task.Delay(100, Cancellation.Token);
+            await client.ConnectAsync(host, port, Cancellation.Token);
             
             Connection = new NetworkConnection(client);
             Connection.MessageReceived += ConnectionOnMessageReceived;

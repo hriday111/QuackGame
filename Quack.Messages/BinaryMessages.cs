@@ -1,5 +1,5 @@
 using System.Text;
-
+using System.Buffers.Binary;
 namespace Quack.Messages;
 
 public interface IBinaryMessage : IMessage
@@ -25,13 +25,17 @@ public class JoinMessage : IBinaryMessage
 
     public void Serialize(Span<byte> buffer)
     {
-        // TODO Stage 1: JoinMessage.Serialize
+        int byteCount = Encoding.UTF8.GetByteCount(Name);
+        BitConverter.TryWriteBytes(buffer, byteCount);
+        Encoding.UTF8.GetBytes(Name, buffer[4..]);
     }
 
     public static IBinaryMessage Deserialize(ReadOnlySpan<byte> buffer)
     {
-        // TODO Stage 1: JoinMessage.Deserialize
-        return new JoinMessage();
+        JoinMessage message = new JoinMessage();
+        int nameLen = BinaryPrimitives.ReadInt32LittleEndian(buffer);
+        message.Name = Encoding.UTF8.GetString(buffer.Slice(4, nameLen));
+        return message;
     }
 }
 
@@ -48,12 +52,25 @@ public class InputMessage : IBinaryMessage
 
     public void Serialize(Span<byte> buffer)
     {
-        // TODO Stage 1: InputMessage.Serialize
+        byte value = 0;
+        if (Up) value |= (byte)(1 << 0);
+        if (Down) value |= (byte)(1 << 1);
+        if (Left) value |= (byte)(1 << 2);
+        if (Right) value |= (byte)(1 << 3);
+        if (Sprint) value |= (byte)(1 << 4);
+        buffer[0] = value;
     }
 
     public static IBinaryMessage Deserialize(ReadOnlySpan<byte> buffer)
     {
-        // TODO Stage 1: InputMessage.Deserialize
-        return new InputMessage();
+        byte value = buffer[0];
+        return new InputMessage
+        {
+            Up = (value & (1 << 0)) != 0,
+            Down = (value & (1 << 1)) != 0,
+            Left = (value & (1 << 2)) != 0,
+            Right = (value & (1 << 3)) != 0,
+            Sprint = (value & (1 << 4)) != 0
+        };
     }
 }
